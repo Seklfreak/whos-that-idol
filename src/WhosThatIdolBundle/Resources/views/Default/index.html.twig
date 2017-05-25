@@ -1,0 +1,90 @@
+{% extends "WhosThatIdolBundle:Default:layout.html.twig" %}
+
+{% block content %}
+    {% if base64File|length > 0 and base64Mime|length > 0 %}
+        <div class="row justify-content-lg-center">
+            <div class="col-lg-12">
+                <h4 class="sample-image-headline">Hmm, look who we found!</h4>
+                <div class="sample-image-center">
+                    <div class="sample-image-container">
+                        <img src="data:{{ base64Mime }};base64,{{ base64File }}" class="rounded"
+                             style="width: {{ displayWidth }}px; height: {{ displayHeight }}px;">
+                        {% if idolsFound|length > 0 %}
+                            {% for idolFound in idolsFound %}
+                                <div class="face-box">
+                                    <div style="
+                                            top: {{ idolFound.topLeftY }}px;
+                                            left: {{ idolFound.topLeftX }}px;
+                                            height: {{ idolFound.width }}px;
+                                            width: {{ idolFound.height }}px;">
+                                        <i class="fa fa-question-circle fa-3x"
+                                           style="" aria-hidden="true"></i>
+                                    </div>
+                                    <p style="
+                                            top: {{ idolFound.topLeftY + idolFound.width + 3 }}px;
+                                            left: {{ idolFound.topLeftX }}px;"
+                                       class="rounded">
+                                        {{ idolFound.id }} ({{ idolFound.confidence }} %)
+                                    </p>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="alert alert-danger" role="alert">
+                                <strong>Too nugu?</strong> We were unable to recognize any idol in the picture. :(
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {#
+    <div class="col-lg-12">
+        {% if idolsFound|length > 0 %}
+            {% for idolFound in idolsFound %}
+                <p>Hi <b>{{ idolFound.id }}</b> at X: {{ idolFound.topLeftX }} Y: {{ idolFound.topLeftY }}
+                    Confidence: {{ idolFound.confidence }}</p>
+            {% endfor %}
+        {% else %}
+            <p>Unable to recognize idol. :(</p>
+        {% endif %}
+    </div>
+    #}
+
+    <div class="jumbotron">
+        <h1 class="display-3">Who's that nugu?</h1>
+        <p class="lead">Upload a picture of a korean idol and we will tell you who it is.</p>
+        <!-- <p><a class="btn btn-lg btn-success" href="#" role="button">Upload!</a></p> -->
+
+        {{ form_start(uploadForm) }}
+        {{ form_row(uploadForm.idolPicture) }}
+        {{ form_row(uploadForm.submit) }}
+        {{ form_end(uploadForm) }}
+    </div>
+
+    <!-- <div class="row marketing">
+        <div class="col-lg-6">
+            <h4>Subheading</h4>
+            <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
+
+            <h4>Subheading</h4>
+            <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
+
+            <h4>Subheading</h4>
+            <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
+        </div>
+
+        <div class="col-lg-6">
+            <h4>Subheading</h4>
+            <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
+
+            <h4>Subheading</h4>
+            <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
+
+            <h4>Subheading</h4>
+            <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
+        </div>
+    </div> -->
+
+{% endblock %}

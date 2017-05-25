@@ -1,0 +1,4 @@
+whos_that_idol:
+    resource: "@WhosThatIdolBundle/Controller/"
+    type:     annotation
+    prefix:   /

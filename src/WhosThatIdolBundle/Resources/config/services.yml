@@ -1,0 +1,4 @@
+services:
+#    whos_that_idol.example:
+#        class: WhosThatIdolBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]
