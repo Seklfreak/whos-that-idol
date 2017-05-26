@@ -19,22 +19,16 @@ class DefaultController extends Controller
         $form = $this->createForm(TrialUploadForm::class, $trialUpload);
         $form->handleRequest($request);
 
-        $idolsFound = array();
-        $base64File = "";
-        $base64Mime = "";
-        $imageWidth = 0;
-        $imageHeight = 0;
+        $sampleResult = array();
         $imageDisplayWidth = 0;
         $imageDisplayHeight = 0;
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // $file stores the uploaded PDF file
             $file = $trialUpload->getIdolPicture();
 
-            // Generate a unique name for the file before saving it
             $fileName = md5(uniqid()) . '.' . $file->guessExtension();
 
-            $base64Mime = $file->getMimeType();
+            $imageMime = $file->getMimeType();
             list($imageWidth, $imageHeight) = getimagesize($file);
 
             if ($imageWidth > $imageHeight) {
@@ -50,14 +44,12 @@ class DefaultController extends Controller
                 $imageDisplayHeight = 300;
             }
 
-            // Move the file to the directory where brochures are stored
             $file->move(
                 $this->getParameter('trial_pictures_directory'),
                 $fileName
             );
 
             $kairos = $this->container->get('app.kairos');
-            //$response = $kairos->viewGalleries();
 
             $movedFilepath = $this->getParameter('trial_pictures_directory') . '/' . $fileName;
 
@@ -65,7 +57,8 @@ class DefaultController extends Controller
 
             $argumentArray = array(
                 'image' => $base64File,
-                'gallery_name' => $this->getParameter('kairos_gallery_name')
+                'gallery_name' => $this->getParameter('kairos_gallery_name'),
+                'max_num_results' => 30
             );
             $response = $kairos->recognize($argumentArray);
 
@@ -73,34 +66,44 @@ class DefaultController extends Controller
 
             unlink($movedFilepath);
 
-            if (array_key_exists('images', $responseArray)) {
+            $sampleResult = array(
+                'errorCode' => 0,
+                'errorMessage' => '',
+                'imageB64' => $base64File,
+                'imageMime' => $imageMime,
+                'displayWidth' => $imageDisplayWidth,
+                'displayHeight' => $imageDisplayHeight,
+                'faces' => array()
+            );
+
+            if (array_key_exists('images', $responseArray) && count($responseArray['images']) >= 1) {
                 foreach ($responseArray['images'] as $item) {
-                    if ($item['transaction']['status'] == 'success') {
-                        $idolsFound[] = array(
-                            'id' => $item['transaction']['subject_id'],
-                            'confidence' => round($item['transaction']['confidence']*100, 0),
-                            'width' => round($imageDisplayWidth * ($item['transaction']['width'] / $imageWidth)),
-                            'height' => round($imageDisplayHeight * ($item['transaction']['height'] / $imageHeight)),
-                            'topLeftX' => round($imageDisplayWidth * ($item['transaction']['topLeftX'] / $imageWidth)),
-                            'topLeftY' =>  round($imageDisplayHeight * ($item['transaction']['topLeftY'] / $imageHeight))
-                        );
+                    $id = '';
+                    $confidence = 0;
+                    if (array_key_exists('subject_id', $item['transaction'])) {
+                        $id = $item['transaction']['subject_id'];
+                        $confidence = round($item['transaction']['confidence'] * 100, 0);
                     }
+                    $sampleResult['faces'][] = array(
+                        'id' => $id,
+                        'confidence' => $confidence,
+                        'width' => round($imageDisplayWidth * ($item['transaction']['width'] / $imageWidth)),
+                        'height' => round($imageDisplayHeight * ($item['transaction']['height'] / $imageHeight)),
+                        'topLeftX' => round($imageDisplayWidth * ($item['transaction']['topLeftX'] / $imageWidth)),
+                        'topLeftY' => round($imageDisplayHeight * ($item['transaction']['topLeftY'] / $imageHeight))
+                    );
                 }
             }
-
-            // Update the 'brochure' property to store the PDF file name
-            // instead of its contents
-            //$trialUpload->setIdolPicture($fileName);
+            if (array_key_exists('Errors', $responseArray) && count($responseArray['Errors']) >= 1) {
+                $sampleResult['errorCode'] = $responseArray['Errors'][0]['ErrCode'];
+                $sampleResult['errorMessage'] = $responseArray['Errors'][0]['Message'];
+            }
         }
 
 
         return $this->render('WhosThatIdolBundle:Default:index.html.twig', array(
             'uploadForm' => $form->createView(),
-            'idolsFound' => $idolsFound,
-            'base64File' => $base64File,
-            'base64Mime' => $base64Mime,
-            'displayWidth' => $imageDisplayWidth,
-            'displayHeight' => $imageDisplayHeight
+            'sampleResult' => $sampleResult
         ));
     }
 }

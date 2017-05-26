@@ -1,36 +1,40 @@
 {% extends "WhosThatIdolBundle:Default:layout.html.twig" %}
 
 {% block content %}
-    {% if base64File|length > 0 and base64Mime|length > 0 %}
+    {% if sampleResult|length > 0 %}
         <div class="row justify-content-lg-center">
             <div class="col-lg-12">
                 <h4 class="sample-image-headline">Hmm, look who we found!</h4>
                 <div class="sample-image-center">
                     <div class="sample-image-container">
-                        <img src="data:{{ base64Mime }};base64,{{ base64File }}" class="rounded"
-                             style="width: {{ displayWidth }}px; height: {{ displayHeight }}px;">
-                        {% if idolsFound|length > 0 %}
-                            {% for idolFound in idolsFound %}
+                        <img src="data:{{ sampleResult.imageMime }};base64,{{ sampleResult.imageB64 }}" class="rounded"
+                             style="width: {{ sampleResult.displayWidth }}px; height: {{ sampleResult.displayHeight }}px;">
+                        {% if sampleResult.faces|length > 0 %}
+                            {% for face in sampleResult.faces %}
                                 <div class="face-box">
                                     <div style="
-                                            top: {{ idolFound.topLeftY }}px;
-                                            left: {{ idolFound.topLeftX }}px;
-                                            height: {{ idolFound.width }}px;
-                                            width: {{ idolFound.height }}px;">
-                                        <i class="fa fa-question-circle fa-3x"
+                                            top: {{ face.topLeftY }}px;
+                                            left: {{ face.topLeftX }}px;
+                                            height: {{ face.width }}px;
+                                            width: {{ face.height }}px;">
+                                        <i class="fa fa-question-circle fa-2x"
                                            style="" aria-hidden="true"></i>
                                     </div>
                                     <p style="
-                                            top: {{ idolFound.topLeftY + idolFound.width + 3 }}px;
-                                            left: {{ idolFound.topLeftX }}px;"
+                                            top: {{ face.topLeftY + face.width + 3 }}px;
+                                            left: {{ face.topLeftX }}px;"
                                        class="rounded">
-                                        {{ idolFound.id }} ({{ idolFound.confidence }} %)
+                                        {% if face.id != "" %}
+                                            {{ face.id }} ({{ face.confidence }} %)
+                                        {% else %}
+                                            Too nugu? We don't know who that is!
+                                        {% endif %}
                                     </p>
                                 </div>
                             {% endfor %}
                         {% else %}
                             <div class="alert alert-danger" role="alert">
-                                <strong>Too nugu?</strong> We were unable to recognize any idol in the picture. :(
+                                <strong>What?</strong> We were unable to recognize any face in the picture. :(
                             </div>
                         {% endif %}
                     </div>
