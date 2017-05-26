@@ -58,8 +58,9 @@
         <!-- <p><a class="btn btn-lg btn-success" href="#" role="button">Upload!</a></p> -->
 
         {{ form_start(uploadForm) }}
-        {{ form_row(uploadForm.idolPicture) }}
-        {{ form_row(uploadForm.submit) }}
+            {{ form_errors(uploadForm) }}
+            {{ form_row(uploadForm.idolPicture) }}
+            {{ form_row(uploadForm.submit) }}
         {{ form_end(uploadForm) }}
     </div>
 
