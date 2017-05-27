@@ -16,7 +16,7 @@ class TrialUploadForm extends AbstractType
     {
         $builder
             ->add('idolPicture', FileType::class, array(
-                'label' => 'Image (JPEG or PNG)',
+                'label' => 'trialUploadForm.idolPicture.label',
                 'constraints' => array(
                     new File([
                         'maxSize' => '10M',
@@ -24,11 +24,11 @@ class TrialUploadForm extends AbstractType
                             'image/jpeg',
                             'image/png',
                         ],
-                        'mimeTypesMessage' => 'Please upload a valid JPEG or PNG',
+                        'mimeTypesMessage' => 'trialUploadForm.idolPicture.mimeTypesMessage',
                     ])
                 )
             ))
-            ->add('submit', SubmitType::class, array('label' => 'Upload'))
+            ->add('submit', SubmitType::class, array('label' => 'trialUploadForm.submit.label'))
         ;
     }
 

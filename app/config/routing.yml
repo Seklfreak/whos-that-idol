@@ -7,3 +7,23 @@ whos_that_idol_rest:
     resource: "@WhosThatIdolBundle/Controller/Rest/"
     type:     annotation
     prefix:   /api/v1
+
+fos_user_security_login:
+    path:      /login
+    defaults:  { _controller: FOSUserBundle:Security:login, _method: [GET, POST] }
+
+fos_user_security_check:
+    path:      /login_check
+    defaults:  { _controller: FOSUserBundle:Security:check, _method: POST }
+
+fos_user_security_logout:
+    path:      /account/logout
+    defaults:  { _controller: FOSUserBundle:Security:logout, _method: [GET, POST] }
+
+fos_user_profile_edit:
+    path:      /account/profile/edit
+    defaults:  { _controller: FOSUserBundle:Profile:edit, _method: [GET, POST] }
+
+fos_user_change_password:
+    path:      /account/profile/password
+    defaults:  { _controller: FOSUserBundle:ChangePassword:changePassword, _method: [GET, POST] }

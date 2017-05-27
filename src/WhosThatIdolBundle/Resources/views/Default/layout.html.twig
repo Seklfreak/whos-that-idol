@@ -27,6 +27,17 @@
 
 
 <div class="container">
+
+    {% if app.request.hasPreviousSession %}
+        {% for type, messages in app.session.flashBag.all %}
+            {% for message in messages %}
+                <div class="{{ type }}">
+                    {{ message|trans({}, 'FOSUserBundle') }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+
     <!-- <div class="header clearfix">
         <nav>
             <ul class="nav nav-pills float-right">
@@ -47,7 +58,26 @@
     {% block content %}{% endblock %}
 
     <footer class="footer">
-        <p>&copy; Sebastian Winkler {{ "now"|date("Y") }} - <a href="https://slmn.de" target="_blank">slmn.de</a></p>
+        <p>
+            &copy; Sebastian Winkler {{ "now"|date("Y") }} - <a href="https://slmn.de" target="_blank">slmn.de</a>
+            |
+            {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                {{ 'layout.logged_in_as'|trans({'%username%': app.user.username}, 'FOSUserBundle') }} |
+                <a href="{{ path('fos_user_security_logout') }}">
+                    {{ 'layout.logout'|trans({}, 'FOSUserBundle') }}
+                </a>
+                |
+                <a href="{{ path('fos_user_profile_edit') }}">
+                    Edit account
+                </a>
+                |
+                <a href="{{ path('fos_user_change_password') }}">
+                    Change password
+                </a>
+            {% else %}
+                <a href="{{ path('fos_user_security_login') }}">{{ 'layout.login'|trans({}, 'FOSUserBundle') }}</a>
+            {% endif %}
+        </p>
     </footer>
 
 </div> <!-- /container -->
