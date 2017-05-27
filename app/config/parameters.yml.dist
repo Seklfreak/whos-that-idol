@@ -21,3 +21,4 @@ parameters:
     kairos_app_id: ~
     kairos_app_key: ~
     kairos_gallery_name: 'whosthatidol'
+    sentry_dsn: ~

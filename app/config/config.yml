@@ -150,3 +150,6 @@ fos_user:
     from_email:
         address: "%mailer_user%"
         sender_name: "%mailer_user%"
+
+sentry:
+    dsn: "%sentry_dsn%"
