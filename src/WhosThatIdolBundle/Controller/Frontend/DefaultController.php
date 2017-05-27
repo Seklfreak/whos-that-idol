@@ -1,12 +1,18 @@
 <?php
 
-namespace WhosThatIdolBundle\Controller;
+namespace WhosThatIdolBundle\Controller\Frontend;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use WhosThatIdolBundle\Entity\Subject;
 use WhosThatIdolBundle\Entity\TrialUpload;
 use Symfony\Component\HttpFoundation\Request;
 use WhosThatIdolBundle\Form\TrialUploadForm;
+use WhosThatIdolBundle\Utils\Base64ApiSafe;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class DefaultController extends Controller
 {
@@ -76,21 +82,31 @@ class DefaultController extends Controller
                 'faces' => array()
             );
 
+            $encoders = array(new JsonEncoder());
+            $normalizers = array(new ObjectNormalizer());
+
+            $serializer = new Serializer($normalizers, $encoders);
+
             if (array_key_exists('images', $responseArray) && count($responseArray['images']) >= 1) {
                 foreach ($responseArray['images'] as $item) {
-                    $id = '';
+                    $subject = new Subject();
                     $confidence = 0;
-                    if (array_key_exists('subject_id', $item['transaction'])) {
-                        $id = $item['transaction']['subject_id'];
+                    if (array_key_exists('subject_id', $item['transaction']) && array_key_exists('confidence', $item['transaction'])) {
+                        $subject = $serializer->deserialize(Base64ApiSafe::base64apisafe_decode($item['transaction']['subject_id']), Subject::class, 'json');
                         $confidence = round($item['transaction']['confidence'] * 100, 0);
                     }
                     $sampleResult['faces'][] = array(
-                        'id' => $id,
+                        'name' => $subject->getName(),
+                        'groups' => $subject->getGroups(),
                         'confidence' => $confidence,
-                        'width' => round($imageDisplayWidth * ($item['transaction']['width'] / $imageWidth)),
-                        'height' => round($imageDisplayHeight * ($item['transaction']['height'] / $imageHeight)),
-                        'topLeftX' => round($imageDisplayWidth * ($item['transaction']['topLeftX'] / $imageWidth)),
-                        'topLeftY' => round($imageDisplayHeight * ($item['transaction']['topLeftY'] / $imageHeight))
+                        'width' => $item['transaction']['width'],
+                        'height' => $item['transaction']['height'],
+                        'topLeftX' => $item['transaction']['topLeftX'],
+                        'topLeftY' => $item['transaction']['topLeftY'],
+                        'scaledWidth' => round($imageDisplayWidth * ($item['transaction']['width'] / $imageWidth)),
+                        'scaledHeight' => round($imageDisplayHeight * ($item['transaction']['height'] / $imageHeight)),
+                        'scaledTopLeftX' => round($imageDisplayWidth * ($item['transaction']['topLeftX'] / $imageWidth)),
+                        'scaledTopLeftY' => round($imageDisplayHeight * ($item['transaction']['topLeftY'] / $imageHeight))
                     );
                 }
             }

@@ -13,21 +13,29 @@
                             {% for face in sampleResult.faces %}
                                 <div class="face-box">
                                     <div style="
-                                            top: {{ face.topLeftY }}px;
-                                            left: {{ face.topLeftX }}px;
-                                            height: {{ face.width }}px;
-                                            width: {{ face.height }}px;">
+                                            top: {{ face.scaledTopLeftY }}px;
+                                            left: {{ face.scaledTopLeftX }}px;
+                                            height: {{ face.scaledWidth }}px;
+                                            width: {{ face.scaledHeight }}px;"
+                                        class="face-area"
+                                         data-face-top="{{ face.topLeftY }}"
+                                         data-face-left="{{ face.topLeftX }}"
+                                         data-face-width="{{ face.width }}"
+                                         data-face-height="{{ face.height }}"
+                                         data-idol-name="{{ face.name }}"
+                                         data-group-name="{{ face.groups|join(', ') }}"
+                                    >
                                         <i class="fa fa-question-circle fa-2x"
                                            style="" aria-hidden="true"></i>
                                     </div>
                                     <p style="
-                                            top: {{ face.topLeftY + face.width + 3 }}px;
-                                            left: {{ face.topLeftX }}px;"
+                                            top: {{ face.scaledTopLeftY + face.scaledWidth + 3 }}px;
+                                            left: {{ face.scaledTopLeftX }}px;"
                                        class="rounded">
-                                        {% if face.id != "" %}
-                                            {{ face.id }} ({{ face.confidence }} %)
+                                        {% if face.name != "" %}
+                                            <b>{{ face.name }}</b>{% if face.groups|length > 0 %} of <b>{{ face.groups|join(', ') }}</b>{% endif %} ({{ face.confidence }} %)
                                         {% else %}
-                                            Too nugu? We don't know who that is!
+                                            <b>Too nugu?</b> We don't know who that is!
                                         {% endif %}
                                     </p>
                                 </div>
@@ -68,28 +76,38 @@
         {{ form_end(uploadForm) }}
     </div>
 
-    <!-- <div class="row marketing">
-        <div class="col-lg-6">
-            <h4>Subheading</h4>
-            <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
-
-            <h4>Subheading</h4>
-            <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
-
-            <h4>Subheading</h4>
-            <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
+    <div class="modal fade" id="submitFaceModal" tabindex="-1" role="dialog" aria-labelledby="submitFaceModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="submitFaceModalLabel">Submit an unknown face or false detection</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h1>Who is this?</h1>
+                            <img class="rounded" src="">
+                            <form>
+                                <div class="form-group">
+                                    <label for="face-idol-name" class="form-control-label">Idol Name:</label>
+                                    <input type="text" class="form-control" id="face-idol-name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="face-group-name" class="form-control-label">Group(s):</label>
+                                    <input type="text" class="form-control" id="face-group-name">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submitFaceModalSubmitButton">Submit</button>
+                </div>
+            </div>
         </div>
-
-        <div class="col-lg-6">
-            <h4>Subheading</h4>
-            <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
-
-            <h4>Subheading</h4>
-            <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
-
-            <h4>Subheading</h4>
-            <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
-        </div>
-    </div> -->
-
+    </div>
 {% endblock %}

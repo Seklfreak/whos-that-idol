@@ -1,4 +1,9 @@
-whos_that_idol:
-    resource: "@WhosThatIdolBundle/Controller/"
+whos_that_idol_frontend:
+    resource: "@WhosThatIdolBundle/Controller/Frontend/"
     type:     annotation
     prefix:   /
+
+whos_that_idol_rest:
+    resource: "@WhosThatIdolBundle/Controller/Rest/"
+    type:     annotation
+    prefix:   /api/v1

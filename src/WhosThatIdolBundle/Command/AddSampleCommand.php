@@ -6,6 +6,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use WhosThatIdolBundle\Entity\Subject;
+use WhosThatIdolBundle\Utils\Base64ApiSafe;
 
 class AddSampleCommand extends ContainerAwareCommand
 {
@@ -32,8 +37,18 @@ class AddSampleCommand extends ContainerAwareCommand
 
         $kairos = $this->getContainer()->get('app.kairos');
 
-        $subjectId = str_replace('.', '', str_replace('/', '-', $input->getArgument('idol-english-name').' of '.
-            $input->getArgument('group-english-name')));
+        $subject = new Subject();
+        $subject->setName($input->getArgument('idol-english-name'));
+        $subject->setGroups(array_map('trim', explode(',', $input->getArgument('group-english-name'))));
+        $subject->setFilename($input->getArgument('filename'));
+        $subject->setSource('commandline');
+
+        $encoders = array(new JsonEncoder());
+        $normalizers = array(new ObjectNormalizer());
+
+        $serializer = new Serializer($normalizers, $encoders);
+
+        $subjectJson = $serializer->serialize($subject, 'json');
 
         if (\file_exists($input->getArgument('filename'))) {
             $fileContent = \file_get_contents($input->getArgument('filename'));
@@ -45,14 +60,19 @@ class AddSampleCommand extends ContainerAwareCommand
 
                 $argumentArray =  array(
                     "image" => base64_encode($fileContent),
-                    "subject_id" => $subjectId,
+                    "subject_id" => Base64ApiSafe::base64apisafe_encode($subjectJson),
                     "gallery_name" => $this->getContainer()->getParameter('kairos_gallery_name')
                 );
                 $response = $kairos->enroll($argumentArray);
 
                 $result = json_decode($response, true);
 
-                $output->writeln("Status: ".$result["images"][0]["transaction"]["status"]);
+                if (array_key_exists('images', $result) && count($result['images']) >= 1) {
+                    $output->writeln("Status: ".$result["images"][0]["transaction"]["status"]);
+                }
+                if (array_key_exists('Errors', $result) && count($result['Errors']) >= 1) {
+                    $output->writeln("Error: ".$result['Errors'][0]['Message']);
+                }
             }
         } else {
             $output->writeln("File not found!");

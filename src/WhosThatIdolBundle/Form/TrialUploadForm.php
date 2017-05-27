@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: sekl
- * Date: 25.05.2017
- * Time: 10:56
- */
 
 namespace WhosThatIdolBundle\Form;
 

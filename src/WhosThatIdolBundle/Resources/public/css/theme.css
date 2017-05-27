@@ -128,3 +128,7 @@ body {
 .face-box div:hover + p, .face-box div:hover i {
     display: block;
 }
+
+#submitFaceModal img {
+    margin-bottom: 0.5rem;
+}
