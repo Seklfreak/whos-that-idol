@@ -71,7 +71,12 @@
 
         {{ form_start(uploadForm) }}
             {{ form_errors(uploadForm) }}
-            {{ form_row(uploadForm.idolPicture) }}
+            <label class="custom-file">
+                {{ form_widget(uploadForm.idolPicture, {'attr': {'class': 'custom-file-input'}}) }}
+                <span class="custom-file-control"></span>
+            </label>
+            {{ form_errors(uploadForm.idolPicture) }}
+            {# {{ form_row(uploadForm.idolPicture) }} #}
             {{ form_row(uploadForm.submit) }}
         {{ form_end(uploadForm) }}
     </div>

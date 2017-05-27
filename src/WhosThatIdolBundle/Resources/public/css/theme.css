@@ -136,3 +136,7 @@ body {
 .queue-table img {
     max-height: 6rem;
 }
+
+.jumbotron .custom-file {
+    margin-bottom: 0.5rem;
+}

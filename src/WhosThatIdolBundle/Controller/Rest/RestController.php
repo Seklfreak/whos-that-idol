@@ -30,6 +30,11 @@ class RestController extends FOSRestController
         $form->submit($request->request->all());
 
         if ($form->isValid()) {
+            if (strlen($subject->getPicture())*8 > 1000000) {
+                // bigger than 1 MB?
+                $subject->setPicture('');
+            }
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($subject);
             $em->flush();

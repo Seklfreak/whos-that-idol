@@ -24,6 +24,7 @@
                 </td>
                 <td><img src="{{ subject.face }}"></td>
                 <td>
+                    {% if subject.picture != "" %}<a href="{{ subject.picture }}" target="_blank"><i class="fa fa-external-link fa-2x" aria-hidden="true"></i></a>{% endif %}
                     <a data-queue-id="{{ subject.id }}" class="queue-accept" href="#"><i class="fa fa-check fa-2x" aria-hidden="true"></i></a>
                     <a data-queue-id="{{ subject.id }}" class="queue-delete" href="#"><i class="fa fa-trash fa-2x" aria-hidden="true"></i></a>
                 </td>

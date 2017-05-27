@@ -48,8 +48,7 @@ class Subject
     /**
      * @var string
      *
-     * @Assert\NotBlank()
-     * @ORM\Column(name="Picture", type="text")
+     * @ORM\Column(name="Picture", type="text", nullable=TRUE)
      */
     private $picture;
 
@@ -129,6 +128,7 @@ class Subject
      */
     public function setGroups($groups)
     {
+        asort($groups);
         $this->groups = $groups;
 
         return $this;
