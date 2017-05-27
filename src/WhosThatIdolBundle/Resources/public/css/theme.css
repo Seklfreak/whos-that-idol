@@ -132,3 +132,7 @@ body {
 #submitFaceModal img {
     margin-bottom: 0.5rem;
 }
+
+.queue-table img {
+    max-height: 6rem;
+}

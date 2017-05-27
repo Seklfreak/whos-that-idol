@@ -3,6 +3,11 @@ whos_that_idol_frontend:
     type:     annotation
     prefix:   /
 
+whos_that_idol_backend:
+    resource: "@WhosThatIdolBundle/Controller/Backend/"
+    type:     annotation
+    prefix:   /
+
 whos_that_idol_rest:
     resource: "@WhosThatIdolBundle/Controller/Rest/"
     type:     annotation

@@ -32,10 +32,12 @@ class FolderSampleCommand extends ContainerAwareCommand
 
         $kairos = $this->getContainer()->get('app.kairos');
 
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new ObjectNormalizer());
+        $normalizer = new ObjectNormalizer();
+        $normalizer->setIgnoredAttributes(array('picture', 'face'));
 
-        $serializer = new Serializer($normalizers, $encoders);
+        $encoders = array(new JsonEncoder());
+
+        $serializer = new Serializer(array($normalizer), $encoders);
 
         foreach ($finder as $file) {
             $pathParts = pathinfo($file->getRealPath());

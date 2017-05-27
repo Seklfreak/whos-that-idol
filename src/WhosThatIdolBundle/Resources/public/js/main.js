@@ -54,7 +54,7 @@ $(function () {
                         var submitIdolName = $submitFaceModalIdolNameInput.val();
                         var submitIdolGroupsText = $submitFaceModalGroupNameInput.val();
                         var submitIdolPicture = $sampleImage.attr('src');
-                        var submitIdolFace = img.src;
+                        var submitIdolFace = base64ImageData;
 
                         var submitIdolGroups = [];
 
@@ -74,6 +74,7 @@ $(function () {
                             },
                             success: function () {
                                 $submitFaceModal.modal('hide');
+                                $submitFaceModalSubmitButton.prop('onclick', null).off('click');
                             },
                             error: function (jqXHR) {
                                 console.error(jqXHR);
@@ -89,4 +90,58 @@ $(function () {
             img.src = $sampleImage.attr('src');
         });
     }
+
+    $('.queue-delete').each(function () {
+        var $queueDeleteButton = $(this);
+        var $queueDeleteId = $queueDeleteButton.data('queue-id');
+
+        $queueDeleteButton.on('click', function() {
+            $.ajax({
+                type: 'POST',
+                url: '/api/v1/delete_subject.json', // TODO: routing
+                data: {
+                    'subject-id': $queueDeleteId
+                },
+                success: function () {
+                    location.reload();
+                },
+                error: function (jqXHR) {
+                    console.error(jqXHR);
+                }
+            });
+        });
+    });
+
+    $('.queue-accept').each(function () {
+        var $queueAcceptButton = $(this);
+        var $queueAcceptId = $queueAcceptButton.data('queue-id');
+        var $queueAcceptIdolNameInput = $('#queue-idol-name-' + $queueAcceptId);
+        var $queueAcceptGroupNameInput = $('#queue-group-name-' + $queueAcceptId);
+
+        $queueAcceptButton.on('click', function() {
+            var $queueAcceptIdolName = $queueAcceptIdolNameInput.val();
+            var $queueAcceptGroupsNameText = $queueAcceptGroupNameInput.val();
+            var $queueAcceptGroups = [];
+
+            $.each($queueAcceptGroupsNameText.split(','), function(){
+                $queueAcceptGroups.push($.trim(this));
+            });
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/v1/accept_subject.json', // TODO: routing
+                data: {
+                    'subject-id': $queueAcceptId,
+                    'subject-name': $queueAcceptIdolName,
+                    'subject-groups': $queueAcceptGroups
+                },
+                success: function () {
+                    location.reload();
+                },
+                error: function (jqXHR) {
+                    console.error(jqXHR);
+                }
+            });
+        });
+    });
 });

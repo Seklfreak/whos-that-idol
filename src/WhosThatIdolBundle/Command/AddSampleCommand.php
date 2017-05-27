@@ -43,10 +43,12 @@ class AddSampleCommand extends ContainerAwareCommand
         $subject->setFilename($input->getArgument('filename'));
         $subject->setSource('commandline');
 
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new ObjectNormalizer());
+        $normalizer = new ObjectNormalizer();
+        $normalizer->setIgnoredAttributes(array('picture', 'face'));
 
-        $serializer = new Serializer($normalizers, $encoders);
+        $encoders = array(new JsonEncoder());
+
+        $serializer = new Serializer(array($normalizer), $encoders);
 
         $subjectJson = $serializer->serialize($subject, 'json');
 
