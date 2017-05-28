@@ -48,6 +48,10 @@ $(function () {
                     $submitFaceModalIdolNameInput.val(idolName);
                     $submitFaceModalGroupNameInput.val(groupName);
 
+                    $submitFaceModal.on('hidden.bs.modal', function (e) {;
+                        $submitFaceModalSubmitButton.prop('onclick', null).off('click');
+                    });
+
                     $submitFaceModalSubmitButton.on('click', function() {
                         $submitFaceModalSubmitButton.prop("disabled", true);
 
@@ -73,8 +77,7 @@ $(function () {
                                 'source': 'web-modal'
                             },
                             success: function () {
-                                $submitFaceModal.modal('hide');
-                                $submitFaceModalSubmitButton.prop('onclick', null).off('click');
+                                $submitFaceModal.modal('hide')
                             },
                             error: function (jqXHR) {
                                 console.error(jqXHR);

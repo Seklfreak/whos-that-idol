@@ -7,6 +7,9 @@ services:
     app.kairos:
         class: WhosThatIdolBundle\Service\Kairos
         arguments: ['%kairos_app_id%', '%kairos_app_key%']
+    app.queue:
+        class: WhosThatIdolBundle\Service\Queue
+        arguments: [ '@doctrine.orm.entity_manager' ]
 
     #service_name:
     #    class: AppBundle\Directory\ClassName

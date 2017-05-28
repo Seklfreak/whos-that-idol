@@ -63,21 +63,13 @@
             |
             {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
                 {{ 'layout.logged_in_as'|trans({'%username%': app.user.username}, 'FOSUserBundle') }} |
-                <a href="{{ path('fos_user_security_logout') }}">
-                    {{ 'layout.logout'|trans({}, 'FOSUserBundle') }}
-                </a>
+                <a href="{{ path('fos_user_security_logout') }}"> {{ 'layout.logout'|trans({}, 'FOSUserBundle') }}</a>
                 |
-                <a href="{{ path('backend_queue') }}">
-                    Queue
-                </a>
+                <a href="{{ path('backend_queue') }}">Queue ({{ queue_service.queueItemsLeft() }})</a>
                 |
-                <a href="{{ path('fos_user_profile_edit') }}">
-                    Edit account
-                </a>
+                <a href="{{ path('fos_user_profile_edit') }}">Edit account</a>
                 |
-                <a href="{{ path('fos_user_change_password') }}">
-                    Change password
-                </a>
+                <a href="{{ path('fos_user_change_password') }}">Change password</a>
             {% else %}
                 <a href="{{ path('fos_user_security_login') }}">{{ 'layout.login'|trans({}, 'FOSUserBundle') }}</a>
             {% endif %}
