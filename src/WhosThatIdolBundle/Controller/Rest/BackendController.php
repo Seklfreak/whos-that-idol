@@ -4,9 +4,6 @@ namespace WhosThatIdolBundle\Controller\Rest;
 
 use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 use WhosThatIdolBundle\Entity\Subject;
 use WhosThatIdolBundle\Form\SubjectForm;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -16,7 +13,6 @@ use FOS\RestBundle\View\View;
 use Symfony\Component\Form\Form;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use WhosThatIdolBundle\Utils\Base64ApiSafe;
 
 class BackendController extends FOSRestController
 {
@@ -83,19 +79,15 @@ class BackendController extends FOSRestController
                 $errors = $validator->validate($subject);
 
                 if (count($errors) <= 0) {
-                    $normalizer = new ObjectNormalizer();
-                    $normalizer->setIgnoredAttributes(array('picture', 'face'));
-                    $encoders = array(new JsonEncoder());
-
-                    $serializer = new Serializer(array($normalizer), $encoders);
-
-                    $subjectJson = $serializer->serialize($subject, 'json');
+                    $persistedSubject = $this->getDoctrine()
+                        ->getRepository('WhosThatIdolBundle:PersistedSubject')
+                        ->getByEnglishNameAndGroups($subject->getName(), $subject->getGroups());
 
                     $faceParts = explode(',', $subject->getFace());
 
                     $argumentArray =  array(
                         "image" => $faceParts[1],
-                        "subject_id" => Base64ApiSafe::base64apisafe_encode($subjectJson),
+                        "subject_id" => $persistedSubject->getId(),
                         "gallery_name" => $this->getParameter('kairos_gallery_name')
                     );
 

@@ -7,11 +7,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use WhosThatIdolBundle\Entity\Subject;
-use WhosThatIdolBundle\Utils\Base64ApiSafe;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
 
 class FolderSampleCommand extends ContainerAwareCommand
 {
@@ -31,13 +27,6 @@ class FolderSampleCommand extends ContainerAwareCommand
         $finder->files()->in($input->getArgument('folder'));
 
         $kairos = $this->getContainer()->get('app.kairos');
-
-        $normalizer = new ObjectNormalizer();
-        $normalizer->setIgnoredAttributes(array('picture', 'face'));
-
-        $encoders = array(new JsonEncoder());
-
-        $serializer = new Serializer(array($normalizer), $encoders);
 
         foreach ($finder as $file) {
             $pathParts = pathinfo($file->getRealPath());
@@ -60,7 +49,9 @@ class FolderSampleCommand extends ContainerAwareCommand
             $subject->setFilename($file->getRealPath());
             $subject->setSource('commandline');
 
-            $subjectJson = $serializer->serialize($subject, 'json');
+            $persistedSubject = $this->getContainer()->get('doctrine')
+                ->getRepository('WhosThatIdolBundle:PersistedSubject')
+                ->getByEnglishNameAndGroups($subject->getName(), $subject->getGroups());
 
             if (\file_exists($file->getRealPath())) {
                 $fileContent = \file_get_contents($file->getRealPath());
@@ -70,7 +61,7 @@ class FolderSampleCommand extends ContainerAwareCommand
                 } else {
                     $argumentArray = array(
                         "image" => base64_encode($fileContent),
-                        "subject_id" => Base64ApiSafe::base64apisafe_encode($subjectJson),
+                        "subject_id" => $persistedSubject->getId(),
                         "gallery_name" => $this->getContainer()->getParameter('kairos_gallery_name')
                     );
                     $response = $kairos->enroll($argumentArray);

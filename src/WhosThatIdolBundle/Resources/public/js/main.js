@@ -72,7 +72,7 @@ $(function () {
                             data: {
                                 'name': submitIdolName,
                                 'groups': submitIdolGroups,
-                                'picture': submitIdolPicture,
+                                //'picture': submitIdolPicture,
                                 'face': submitIdolFace,
                                 'source': 'web-modal'
                             },

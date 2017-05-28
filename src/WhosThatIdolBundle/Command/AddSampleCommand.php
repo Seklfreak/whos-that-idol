@@ -6,11 +6,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use WhosThatIdolBundle\Entity\Subject;
-use WhosThatIdolBundle\Utils\Base64ApiSafe;
 
 class AddSampleCommand extends ContainerAwareCommand
 {
@@ -43,14 +39,9 @@ class AddSampleCommand extends ContainerAwareCommand
         $subject->setFilename($input->getArgument('filename'));
         $subject->setSource('commandline');
 
-        $normalizer = new ObjectNormalizer();
-        $normalizer->setIgnoredAttributes(array('picture', 'face'));
-
-        $encoders = array(new JsonEncoder());
-
-        $serializer = new Serializer(array($normalizer), $encoders);
-
-        $subjectJson = $serializer->serialize($subject, 'json');
+        $persistedSubject = $this->getContainer()->get('doctrine')
+            ->getRepository('WhosThatIdolBundle:PersistedSubject')
+            ->getByEnglishNameAndGroups($subject->getName(), $subject->getGroups());
 
         if (\file_exists($input->getArgument('filename'))) {
             $fileContent = \file_get_contents($input->getArgument('filename'));
@@ -62,7 +53,7 @@ class AddSampleCommand extends ContainerAwareCommand
 
                 $argumentArray =  array(
                     "image" => base64_encode($fileContent),
-                    "subject_id" => Base64ApiSafe::base64apisafe_encode($subjectJson),
+                    "subject_id" => $persistedSubject->getId(),
                     "gallery_name" => $this->getContainer()->getParameter('kairos_gallery_name')
                 );
                 $response = $kairos->enroll($argumentArray);

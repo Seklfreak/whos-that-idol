@@ -4,6 +4,7 @@ namespace WhosThatIdolBundle\Controller\Frontend;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\SecurityBundle\SecurityUserValueResolver;
 use WhosThatIdolBundle\Entity\Subject;
 use WhosThatIdolBundle\Entity\TrialUpload;
 use Symfony\Component\HttpFoundation\Request;
@@ -88,16 +89,23 @@ class DefaultController extends Controller
             $serializer = new Serializer($normalizers, $encoders);
 
             if (array_key_exists('images', $responseArray) && count($responseArray['images']) >= 1) {
+                $persistedSubjectsRepo = $this->getDoctrine()->getRepository('WhosThatIdolBundle:PersistedSubject');
+
                 foreach ($responseArray['images'] as $item) {
-                    $subject = new Subject();
+                    $subjectName = '';
+                    $subjectGroups = array();
                     $confidence = 0;
                     if (array_key_exists('subject_id', $item['transaction']) && array_key_exists('confidence', $item['transaction'])) {
-                        $subject = $serializer->deserialize(Base64ApiSafe::base64apisafe_decode($item['transaction']['subject_id']), Subject::class, 'json');
+                        $subject = $persistedSubjectsRepo->find($item['transaction']['subject_id']);
+                        if ($subject != null) {
+                            $subjectName = $subject->getEnglishName();
+                            $subjectGroups = $subject->getGroups();
+                        }
                         $confidence = round($item['transaction']['confidence'] * 100, 0);
                     }
                     $sampleResult['faces'][] = array(
-                        'name' => $subject->getName(),
-                        'groups' => $subject->getGroups(),
+                        'name' => $subjectName,
+                        'groups' => $subjectGroups,
                         'confidence' => $confidence,
                         'width' => $item['transaction']['width'],
                         'height' => $item['transaction']['height'],

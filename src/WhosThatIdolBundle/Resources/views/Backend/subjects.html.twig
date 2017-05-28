@@ -1,0 +1,29 @@
+{% extends "WhosThatIdolBundle:Default:layout.html.twig" %}
+
+{% block content %}
+
+<table class="table table-sm table-striped queue-table">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Groups</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for subject in subjects %}
+    <tr>
+        <th scope="row">{{ subject.id }}</th>
+        <td>
+            <input id="queue-idol-name-{{ subject.id }}" class="form-control" type="text" value="{{ subject.englishName }}">
+        </td>
+        <td>
+            <input id="queue-group-name-{{ subject.id }}" class="form-control" type="text" value="{{ subject.groups|join(', ') }}">
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
